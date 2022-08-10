@@ -3,12 +3,12 @@ package com.example.facedetectdemo
 import android.Manifest
 import android.graphics.Point
 import android.hardware.camera2.CameraDevice
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.ViewTreeObserver
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import com.baidu.aip.util.Base64Util
 import com.carson.gdufs_sign_system.utils.CameraHelper
 import com.carson.gdufs_sign_system.utils.CameraListener
@@ -18,9 +18,8 @@ import com.example.facedetectdemo.util.PermissionUtils
 import com.example.facedetectdemo.widget.CircleTextureBorderView
 import com.example.facedetectdemo.widget.RoundTextureView
 import com.google.gson.Gson
-import java.io.File
-import java.lang.Exception
-import java.text.SimpleDateFormat
+import okhttp3.*
+import java.io.IOException
 import java.util.*
 import kotlin.math.min
 
@@ -191,6 +190,7 @@ class MainActivity : AppCompatActivity(), CameraListener {
         Thread(Runnable {
             if (detectFace(postImage)) {
                 // 检测成功 可以进一步进行比对人脸
+                login(postImage)
             }
         }).start()
     }
@@ -231,6 +231,21 @@ class MainActivity : AppCompatActivity(), CameraListener {
             switchText(mShadowText, true)
         }
         return bSuccess
+    }
+
+    private fun login(postImage : String) {
+        val request = Request.Builder()
+            .url("http://192.168.3.58:5000/face?img=$postImage")
+            .method("GET", null)
+            .build()
+        OkHttpClient().newCall(request).enqueue(object : Callback{
+            override fun onResponse(call: Call, response: Response) {
+                Log.e(TAG, "response.message")
+            }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.i(TAG, e.message)
+            }
+        })
     }
 
     override fun onRequestPermissionsResult(
