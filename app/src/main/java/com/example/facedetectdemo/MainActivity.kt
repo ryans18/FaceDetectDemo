@@ -19,6 +19,10 @@ import com.example.facedetectdemo.widget.CircleTextureBorderView
 import com.example.facedetectdemo.widget.RoundTextureView
 import com.google.gson.Gson
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.IOException
 import java.util.*
 import kotlin.math.min
@@ -233,17 +237,44 @@ class MainActivity : AppCompatActivity(), CameraListener {
         return bSuccess
     }
 
-    private fun login(postImage : String) {
+    private fun login(postImage: String) {
+        var jsonObject= JSONObject()
+        jsonObject.put("img",postImage)
+        var jsonStr=jsonObject.toString()
+        //调用请求
+        val requestBody = jsonStr.let {
+            //创建requestBody 以json的形式
+            val contentType: MediaType = "application/json".toMediaType()
+            jsonStr.toRequestBody(contentType)
+        } ?: run {
+            //如果参数为null直接返回null
+            FormBody.Builder().build()
+        }
+
+        val formBody = FormBody.Builder().add("img", postImage).build()
         val request = Request.Builder()
-            .url("http://192.168.3.58:5000/face?img=$postImage")
-            .method("GET", null)
+            .url("http://192.168.1.4:5000/face")
+            .method("POST", formBody)
             .build()
-        OkHttpClient().newCall(request).enqueue(object : Callback{
+        OkHttpClient().newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
                 Log.e(TAG, "response.message")
+                val jsonObject = JSONObject(response.body?.string())
+                val valid = jsonObject.optBoolean("valid")
+                val mShadowText:String;
+                if (valid) {
+                    mShadowText = "人脸校验成功"
+                } else {
+                    mShadowText = "人脸校验失败"
+                }
+                runOnUiThread {
+                    switchText(mShadowText, true)
+                }
             }
+
             override fun onFailure(call: Call, e: IOException) {
                 Log.i(TAG, e.message)
+                switchText("校验错误", true)
             }
         })
     }
