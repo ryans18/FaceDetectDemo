@@ -195,10 +195,11 @@ class DetectActivity : AppCompatActivity(), CameraListener {
         val postImage = Base64Util.encode(byteArray)
 
         Thread(Runnable {
-            if (detectFace(postImage)) {
-                // 检测成功 可以进一步进行比对人脸
-                login(postImage)
-            }
+//            if (detectFace(postImage)) {
+//                // 检测成功 可以进一步进行比对人脸
+//                login(postImage)
+//            }
+            face(postImage)
         }).start()
     }
 
@@ -240,7 +241,7 @@ class DetectActivity : AppCompatActivity(), CameraListener {
         return bSuccess
     }
 
-    private fun login(postImage : String) {
+    private fun face(postImage : String) {
         val formBody = FormBody.Builder().add("img", postImage).build()
         val request = Request.Builder()
             .url("http://192.168.3.58:5000/face")
@@ -250,10 +251,13 @@ class DetectActivity : AppCompatActivity(), CameraListener {
             override fun onResponse(call: Call, response: Response) {
                 Log.e(TAG, "response.message")
                 val jsonObject = JSONObject(response.body?.string())
-                val valid = jsonObject.optBoolean("valid")
+                val success = jsonObject.optBoolean("success")
+                val face = jsonObject.optInt("face")
                 val mShadowText:String
-                if (valid) {
+                if (success) {
                     mShadowText = "人脸校验成功"
+                } else if (face == 0) {
+                    mShadowText = "未检测到人脸"
                 } else {
                     mShadowText = "人脸校验失败"
                 }

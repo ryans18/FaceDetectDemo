@@ -196,10 +196,10 @@ class RegistActivity : AppCompatActivity(), CameraListener {
         val postImage = Base64Util.encode(byteArray)
 
         Thread(Runnable {
-            if (detectFace(postImage)) {
-                // 检测成功 可以进一步进行比对人脸
-                regist(postImage)
-            }
+//            if (detectFace(postImage)) {
+//                // 检测成功 可以进一步进行比对人脸
+//            }
+            regist(postImage)
         }).start()
     }
 
@@ -250,10 +250,16 @@ class RegistActivity : AppCompatActivity(), CameraListener {
         OkHttpClient().newCall(request).enqueue(object : Callback{
             override fun onResponse(call: Call, response: Response) {
                 Log.e(TAG, "response.message")
-                val mShadowText = if (response.message == "ok") {
-                    "注册成功"
+                val jsonObject = JSONObject(response.body?.string())
+                val face = jsonObject.optInt("face")
+                val success = jsonObject.optBoolean("success")
+                val mShadowText:String
+                if (success) {
+                    mShadowText = "注册成功"
+                } else if (face == 0) {
+                    mShadowText = "未检测到人脸"
                 } else {
-                    "注册失败"
+                    mShadowText = "注册失败"
                 }
                 runOnUiThread {
                     switchText(mShadowText, true)
