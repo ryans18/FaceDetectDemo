@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FaceDetectDemo</string>
+    <string name = "API_URL">http://192.168.3.58:5000</string>
+    <string name = "API_URL_KEY">API_URL</string>
 </resources>

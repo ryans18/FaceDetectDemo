@@ -16,10 +16,10 @@ import com.carson.gdufs_sign_system.utils.CameraListener
 import com.example.facedetectdemo.bean.DetectFaceBean
 import com.example.facedetectdemo.util.AipFaceObject
 import com.example.facedetectdemo.util.PermissionUtils
+import com.example.facedetectdemo.util.SPUtil
 import com.example.facedetectdemo.widget.CircleTextureBorderView
 import com.example.facedetectdemo.widget.RoundTextureView
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -242,9 +242,10 @@ class RegistActivity : AppCompatActivity(), CameraListener {
     }
 
     private fun regist(postImage : String) {
+        val url = SPUtil.getString(getString(R.string.API_URL_KEY), this)
         val formBody = FormBody.Builder().add("img", postImage).build()
         val request = Request.Builder()
-            .url("http://192.168.3.58:5000/regist")
+            .url("$url/regist")
             .method("POST", formBody)
             .build()
         OkHttpClient().newCall(request).enqueue(object : Callback{

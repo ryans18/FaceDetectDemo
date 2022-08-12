@@ -6,19 +6,25 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="132dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        android:gravity="center_horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
+        <EditText
+            android:id="@+id/txt_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/API_URL"/>
         <Button
             android:id="@+id/btn_regist"
             android:layout_width="122dp"
             android:layout_height="45dp"
+            android:layout_marginTop="50dp"
             android:text="注册" />
 
         <Button
